@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asher & Eliezer - Secure Tool</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <style>
+        /* Background and font styles */
+        body {
+            background: radial-gradient(circle, #4CAF50, #2196F3);
+            color: #fff;
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 900px;
+            margin: 50px auto;
+            background: #ffffff;
+            color: #333;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        h1 {
+            font-size: 3rem;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 30px;
+            color: #4CAF50;
+        }
+        h2 {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #2196F3;
+            margin-top: 30px;
+        }
+        label {
+            font-weight: bold;
+            margin-top: 15px;
+        }
+        textarea, input {
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 15px;
+            width: 100%;
+            font-size: 1rem;
+            margin-bottom: 20px;
+        }
+        button {
+            font-size: 1rem;
+            padding: 12px 25px;
+            border-radius: 10px;
+            cursor: pointer;
+            border: none;
+            color: #fff;
+            margin-top: 10px;
+        }
+        .btn-encrypt {
+            background-color: #4CAF50;
+        }
+        .btn-encrypt:hover {
+            background-color: #45a049;
+        }
+        .btn-decrypt {
+            background-color: #2196F3;
+        }
+        .btn-decrypt:hover {
+            background-color: #1976d2;
+        }
+        .btn-generate {
+            background-color: #673AB7;
+        }
+        .btn-generate:hover {
+            background-color: #5E35B1;
+        }
+        .btn-copy {
+            background-color: #FF5722;
+        }
+        .btn-copy:hover {
+            background-color: #E64A19;
+        }
+        .result-box {
+            font-family: monospace;
+            font-size: 1.2rem;
+            background: #f4f4f4;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+            word-wrap: break-word;
+        }
+        .animated {
+            animation: fadeIn 1.2s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container animated">
+        <h1>Asher & Eliezer - Secure Tool</h1>
+        <p>Welcome to the Asher & Eliezer Secure Tool—a professional solution for encrypting messages and generating strong passwords. This project is inspired by the balance, energy, and teamwork of my twin sons, Asher and Eliezer. ❤️</p>
+
+        <!-- Encryption Section -->
+        <div>
+            <h2>Encrypted Messaging</h2>
+            <label for="encryption-key">Encryption Key:</label>
+            <input type="text" id="encryption-key" placeholder="Enter a secure key (or leave blank for auto-generated)">
+            <label for="message">Message:</label>
+            <textarea id="message" rows="4" placeholder="Type your message here"></textarea>
+            <button class="btn btn-encrypt" onclick="encryptMessage()">Encrypt Message</button>
+            <button class="btn btn-decrypt" onclick="decryptMessage()">Decrypt Message</button>
+            <h3>Result:</h3>
+            <div class="result-box" id="encryption-result">Your encrypted or decrypted message will appear here...</div>
+        </div>
+
+        <!-- Password Generator Section -->
+        <div>
+            <h2>Password Generator</h2>
+            <label for="password-length">Password Length:</label>
+            <input type="number" id="password-length" min="8" max="128" value="16">
+            <label>Include:</label>
+            <div>
+                <input type="checkbox" id="include-uppercase" checked> Uppercase Letters<br>
+                <input type="checkbox" id="include-lowercase" checked> Lowercase Letters<br>
+                <input type="checkbox" id="include-numbers" checked> Numbers<br>
+                <input type="checkbox" id="include-symbols" checked> Symbols<br>
+            </div>
+            <button class="btn btn-generate" onclick="generatePassword()">Generate Password</button>
+            <button class="btn btn-copy" onclick="copyPassword()">Copy Password</button>
+            <h3>Your Password:</h3>
+            <div class="result-box" id="password-result">Click "Generate Password" to see your secure password...</div>
+        </div>
+    </div>
+
+    <script>
+        // Generate a secure random key
+        function generateRandomKey() {
+            return CryptoJS.lib.WordArray.random(16).toString();
+        }
+
+        // Encrypt Message
+        function encryptMessage() {
+            let key = document.getElementById("encryption-key").value || generateRandomKey();
+            let message = document.getElementById("message").value;
+
+            if (key.length < 8) {
+                alert("Encryption key must be at least 8 characters long.");
+                return;
+            }
+            if (!message) {
+                alert("Please enter a message to encrypt.");
+                return;
+            }
+
+            const encrypted = CryptoJS.AES.encrypt(message, key).toString();
+            document.getElementById("encryption-result").textContent = `Encrypted: ${encrypted}\nKey: ${key}`;
+        }
+
+        // Decrypt Message
+        function decryptMessage() {
+            let key = document.getElementById("encryption-key").value;
+            let encryptedMessage = document.getElementById("message").value;
+
+            if (key.length < 8) {
+                alert("Encryption key must be at least 8 characters long.");
+                return;
+            }
+            if (!encryptedMessage) {
+                alert("Please enter an encrypted message to decrypt.");
+                return;
+            }
+
+            try {
+                const bytes = CryptoJS.AES.decrypt(encryptedMessage, key);
+                const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+
+                if (!decrypted) {
+                    throw new Error("Invalid decryption");
+                }
+
+                document.getElementById("encryption-result").textContent = `Decrypted: ${decrypted}`;
+            } catch (e) {
+                alert("Invalid encryption key or corrupted message.");
+            }
+        }
+
+        // Generate Password
+        function generatePassword() {
+            const length = document.getElementById("password-length").value;
+            const includeUppercase = document.getElementById("include-uppercase").checked;
+            const includeLowercase = document.getElementById("include-lowercase").checked;
+            const includeNumbers = document.getElementById("include-numbers").checked;
+            const includeSymbols = document.getElementById("include-symbols").checked;
+
+            const uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            const lowercase = "abcdefghijklmnopqrstuvwxyz";
+            const numbers = "0123456789";
+            const symbols = "!@#$%^&*()_+[]{}|;:',.<>?/";
+
+            let charPool = "";
+            if (includeUppercase) charPool += uppercase;
+            if (includeLowercase) charPool += lowercase;
+            if (includeNumbers) charPool += numbers;
+            if (includeSymbols) charPool += symbols;
+
+            if (!charPool) {
+                alert("Please select at least one character type.");
+                return;
+            }
+
+            let password = "";
+            for (let i = 0; i < length; i++) {
+                const randomIndex = Math.floor(Math.random() * charPool.length);
+                password += charPool[randomIndex];
+            }
+
+            document.getElementById("password-result").textContent = password;
+        }
+
+        // Copy Password to Clipboard
+        function copyPassword() {
+            const password = document.getElementById("password-result").textContent;
+            navigator.clipboard.writeText(password).then(() => {
+                alert("Password copied to clipboard!");
+            });
+        }
+    </script>
+</body>
+</html>
